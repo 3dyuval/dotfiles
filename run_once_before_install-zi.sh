@@ -15,7 +15,7 @@ if [[ "$SHELL" != */zsh ]]; then
     ZSH_PATH=$(which zsh)
     # Ensure zsh is in /etc/shells
     grep -qxF "$ZSH_PATH" /etc/shells || echo "$ZSH_PATH" | sudo tee -a /etc/shells
-    chsh -s "$ZSH_PATH"
+    sudo chsh -s "$ZSH_PATH" "$(whoami)"
 fi
 
 echo "==> zi installation complete."

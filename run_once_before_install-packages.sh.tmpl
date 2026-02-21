@@ -11,23 +11,23 @@ sudo pacman -Syu --needed --noconfirm \
     starship lazygit yazi neovim zsh \
     ttf-nerd-fonts-symbols
 
-{{ else if not .isArch -}}
-# Ubuntu - use apt + external repos for missing packages
+{{ else -}}
+# Ubuntu/Debian - use apt + external repos for missing packages
 
 sudo apt-get update
 sudo apt-get install -y \
     bat fd-find fzf ripgrep \
-    kitty btop jq zsh curl git unzip \
-    fontconfig xclip
+    kitty btop jq zsh curl git unzip wget gpg \
+    fontconfig xclip software-properties-common
 
 # Create symlinks for renamed packages
-[[ ! -L /usr/local/bin/bat ]] && sudo ln -sf /usr/bin/batcat /usr/local/bin/bat || true
-[[ ! -L /usr/local/bin/fd ]] && sudo ln -sf /usr/bin/fdfind /usr/local/bin/fd || true
+sudo ln -sf /usr/bin/batcat /usr/local/bin/bat 2>/dev/null || true
+sudo ln -sf /usr/bin/fdfind /usr/local/bin/fd 2>/dev/null || true
 
 # Install eza
 if ! command -v eza &>/dev/null; then
     sudo mkdir -p /etc/apt/keyrings
-    wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
+    curl -fsSL https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor --yes -o /etc/apt/keyrings/gierens.gpg
     echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
     sudo apt-get update && sudo apt-get install -y eza
 fi
@@ -48,7 +48,7 @@ if ! command -v lazygit &>/dev/null; then
     curl -Lo /tmp/lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
     tar xf /tmp/lazygit.tar.gz -C /tmp lazygit
     sudo install /tmp/lazygit /usr/local/bin
-    rm /tmp/lazygit /tmp/lazygit.tar.gz
+    rm -f /tmp/lazygit /tmp/lazygit.tar.gz
 fi
 
 # Install yazi
@@ -63,7 +63,7 @@ fi
 # Install gum
 if ! command -v gum &>/dev/null; then
     sudo mkdir -p /etc/apt/keyrings
-    curl -fsSL https://repo.charm.sh/apt/gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/charm.gpg
+    curl -fsSL https://repo.charm.sh/apt/gpg.key | sudo gpg --dearmor --yes -o /etc/apt/keyrings/charm.gpg
     echo "deb [signed-by=/etc/apt/keyrings/charm.gpg] https://repo.charm.sh/apt/ * *" | sudo tee /etc/apt/sources.list.d/charm.list
     sudo apt-get update && sudo apt-get install -y gum
 fi
@@ -74,7 +74,8 @@ if ! command -v nvim &>/dev/null; then
     sudo rm -rf /opt/nvim
     sudo tar xf /tmp/nvim-linux64.tar.gz -C /opt
     sudo mv /opt/nvim-linux-x86_64 /opt/nvim
-    rm /tmp/nvim-linux64.tar.gz
+    sudo ln -sf /opt/nvim/bin/nvim /usr/local/bin/nvim
+    rm -f /tmp/nvim-linux64.tar.gz
 fi
 
 # Install fastfetch
