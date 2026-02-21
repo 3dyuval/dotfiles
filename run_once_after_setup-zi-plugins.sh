@@ -3,10 +3,14 @@ set -euo pipefail
 
 echo "==> Loading zi plugins (first run)..."
 
-# Source zshrc in a non-interactive zsh to trigger plugin downloads
-# zi plugins are lazy-loaded, so we need to give them a moment
+# Source only zi and run update, skip full .zshrc to avoid hangs
 if command -v zsh &>/dev/null && [[ -f "$HOME/.zi/bin/zi.zsh" ]]; then
-    zsh -ic 'zi update --all --quiet; exit' 2>/dev/null || true
+    timeout 120 zsh -c '
+        typeset -A ZI
+        ZI[BIN_DIR]="${HOME}/.zi/bin"
+        source "${ZI[BIN_DIR]}/zi.zsh"
+        zi update --all --quiet
+    ' 2>/dev/null || true
 fi
 
 echo "==> zi plugins loaded."
