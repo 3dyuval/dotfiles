@@ -1,0 +1,65 @@
+keybinding:
+  universal:
+    # HAEI for item navigation within panels
+    prevItem: e # Up within panel
+    nextItem: a # Down within panel
+
+    # HAEI for directional panel movement
+    prevBlock: h # Left panel
+    nextBlock: i # Right panel
+
+    # Keep alternatives
+    prevItem-alt: k
+    nextItem-alt: j
+    togglePanel: <tab> # Keep tab as fallback
+    scrollUpMain: E
+    scrollDownMain: A
+    # Screen mode navigation
+    nextScreenMode: "+" # Change screen mode (default)
+    prevScreenMode: "-" # Previous screen mode (default)
+    quit: q
+    return: <esc>
+    
+    # Common operations that may have been overridden by HAEI
+    toggleHelp: "?" # Help (usually 'h', now '?')
+    addAll: S # Add all files (if 'a' was add all, move to 'S' for Stage all)
+
+  # Override context-specific bindings that conflict with HAEI
+  files:
+    ignoreFile: I # Move ignore to Shift+I instead of 'i'
+    copyFileInfoToClipboard: p
+    # Common file operations that may have been overridden
+    editFile: E # If 'e' was edit, move to 'E'
+
+  commits:
+    # Ensure navigation works in commits view
+    moveUpCommit: e
+    moveDownCommit: a
+    amendToCommit: A
+    # Override interactive rebase binding to free up 'i' for navigation
+    startInteractiveRebase: R # Move interactive rebase to 'R' instead of 'i'
+    # Toggle show all branches in commits view
+    toggleAllBranchesLog: U
+
+  branches:
+    # Ensure navigation works in branches view
+    # moveUpBranch: e
+    # moveDownBranch: a
+    # Override git flow binding to free up 'i' for navigation
+    viewGitFlowOptions: G # Move git flow to 'G' instead of 'i'
+
+gui:
+  showFileTree: true
+  border: rounded
+  sidePanelWidth: 0.35
+  # showBranchHeads: true
+
+git:
+  autoFetch: true
+  mainBranches: [master, main, develop]
+  # showUntrackedFiles: true
+
+refresher:
+  refreshInterval: 10
+  fetchInterval: 60
+

@@ -1,0 +1,23 @@
+#!/bin/bash
+# File operations
+
+cpp() {
+  local file="${1:-.}"
+  [[ $file = /* ]] || file="$PWD/$file"
+  file="$(realpath "$file")"
+{{ if .isWayland -}}
+  printf '%s' "$file" | wl-copy || return 1
+{{ else -}}
+  printf '%s' "$file" | xclip -selection clipboard || return 1
+{{ end -}}
+  echo "$file copied to clipboard."
+}
+
+# Open file with default handler (background, silent)
+open() {
+{{ if .isArch -}}
+  handlr open "$@" >/dev/null 2>&1 &
+{{ else -}}
+  xdg-open "$@" >/dev/null 2>&1 &
+{{ end -}}
+}

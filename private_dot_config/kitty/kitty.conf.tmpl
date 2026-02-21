@@ -1,0 +1,157 @@
+clear_all_shortcuts yes
+clipboard_control write-clipboard write-primary read-clipboard-ask read-primary-ask
+
+allow_remote_control yes
+listen_on unix:@mykitty
+close_on_child_death no
+# Disable enhanced keyboard protocol to prevent escape sequences
+shell_integration no-cursor
+term xterm-256color
+
+kitty_mod ctrl+shift
+select_by_word_characters @-./_~?&=%+#   # for mouse selection
+copy_on_select primary
+mouse_map right press ungrabbed paste_from_selection
+mouse_map middle release ungrabbed paste_from_clipboard
+# Focus on nvim
+map kitty_mod+y remote_control focus-window --match var:IS_NVIM
+map kitty_mod+k remote_control focus-window --match var:CLD=1
+
+
+map kitty_mod+; load_config_file
+
+map kitty_mod+s clear_terminal to_cursor_scroll active
+map kitty_mod+l toggle_layout tall
+# Detach/attach windows
+map kitty_mod+d detach_tab
+
+
+# lauch new tabs / windows
+map ctrl+t new_tab_with_cwd
+map kitty_mod+enter new_window_with_cwd
+map ctrl+w kitten smart_close.py
+
+# Map ctrl+return to delete previous word
+map ctrl+return send_text all \x17
+# Map ctrl+backspace to delete previous word (standard)
+map ctrl+backspace send_text all \x17
+
+# Word navigation with ctrl+arrow keys
+map ctrl+left send_text all \x1b[1;5D
+map ctrl+right send_text all \x1b[1;5C
+
+
+
+# Move between tabs
+map kitty_mod+p previous_tab
+map kitty_mod+, next_tab
+
+map kitty_mod+page_down move_tab_backward
+map kitty_mod+page_up move_tab_forward
+
+
+# Window navigation with ctrl+haei
+map ctrl+h neighboring_window left
+map ctrl+a neighboring_window down
+map ctrl+e neighboring_window up
+map ctrl+i neighboring_window right
+
+# Unset the mapping to pass the keys to neovim
+map --when-focus-on var:IS_NVIM ctrl+h
+map --when-focus-on var:IS_NVIM ctrl+a
+map --when-focus-on var:IS_NVIM ctrl+e
+map --when-focus-on var:IS_NVIM ctrl+i
+
+# Window resizing
+map alt+ctrl+h kitten relative_resize.py left  5
+map alt+ctrl+a kitten relative_resize.py down  5
+map alt+ctrl+e kitten relative_resize.py up    5
+map alt+ctrl+i kitten relative_resize.py right 5
+
+# Unset resize keys when in neovim
+map --when-focus-on var:IS_NVIM alt+ctrl+h
+map --when-focus-on var:IS_NVIM alt+ctrl+a
+map --when-focus-on var:IS_NVIM alt+ctrl+e
+map --when-focus-on var:IS_NVIM alt+ctrl+i
+
+# Completely disable enhanced keyboard protocol
+map ctrl+shift+u
+map ctrl+shift+escape
+# Disable problematic key combinations that generate escape sequences
+map ctrl+super+/
+map ctrl+super+slash
+
+# Scroll up and down
+map kitty_mod+e scroll_page_up
+map kitty_mod+a scroll_page_down
+
+strip_trailing_spaces always
+map f1 clear_terminal reset active
+map F1 none
+
+map ctrl+shift+c copy_to_clipboard
+map ctrl+shift+v paste_from_clipboard
+map shift+insert paste_from_clipboard
+
+# Disable regular click on links (open with nothing)
+mouse_map left click ungrabbed mouse_handle_click selection prompt
+# Enable Ctrl+click to open links
+mouse_map ctrl+left click ungrabbed mouse_handle_click link
+
+cursor_trail 1
+cursor_trail_decay 0.2 0.1
+
+font_size 12.5
+bold_font        auto
+italic_font      auto
+bold_italic_font auto
+
+font_family Monaspace Neon Var
+font_features MonaspaceNeonVar-Regular +dlig +ss01 +ss02 +ss03 +ss04 +ss05 +ss06 +ss07 +ss08
+font_features MonaspaceNeonVar-SemiBold +dlig +ss01 +ss02 +ss03 +ss04 +ss05 +ss06 +ss07 +ss08
+font_features MonaspaceNeonVar-Italic +dlig +ss01 +ss02 +ss03 +ss04 +ss05 +ss06 +ss07 +ss08
+font_features MonaspaceNeonVar-SemiBoldItalic +dlig +ss01 +ss02 +ss03 +ss04 +ss05 +ss06 +ss07 +ss08
+
+cursor_shape block
+enable_audio_bell no
+
+# Window styling
+window_padding_width 14
+window_padding_height 14
+hide_window_decorations yes
+show_window_resize_notification no
+confirm_os_window_close 0
+background_opacity 0.95
+
+# Tab bar styling
+tab_bar_edge                bottom
+tab_bar_style               powerline
+tab_powerline_style         slanted
+tab_title_template          {title}{' :{}:'.format(num_windows) if num_windows > 1 else ''}
+
+{{ if .isArch -}}
+# Include theme colors from Omarchy theme system
+include ~/.config/omarchy/current/theme/kitty.conf
+{{ else -}}
+# Fallback colorscheme (Tokyo Night)
+foreground #a9b1d6
+background #1a1b26
+color0  #15161e
+color1  #f7768e
+color2  #9ece6a
+color3  #e0af68
+color4  #7aa2f7
+color5  #bb9af7
+color6  #7dcfff
+color7  #a9b1d6
+color8  #414868
+color9  #f7768e
+color10 #9ece6a
+color11 #e0af68
+color12 #7aa2f7
+color13 #bb9af7
+color14 #7dcfff
+color15 #c0caf5
+selection_foreground #a9b1d6
+selection_background #28344a
+{{ end -}}

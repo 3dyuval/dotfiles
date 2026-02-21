@@ -1,0 +1,37 @@
+#!/bin/bash
+# Simple aliases with minimal dependencies
+# Dependencies: bat, eza
+
+# Shell
+alias ezsh='exec zsh'
+
+# Docker
+alias docker-compose='docker compose'
+
+# Editors
+alias nv='nvim'
+alias svim='sudo -E nvim'
+
+# File listing (eza)
+alias ls='eza -lh --group-directories-first --icons=auto'
+alias lsa='ls -a'
+alias lt='eza --tree --level=2 --long --icons --git'
+alias lta='lt -a'
+alias l='ls'
+alias la='ls -a'
+alias ll='ls'
+
+# Utilities
+alias cat='bat'
+{{ if .isWayland -}}
+alias xc='wl-copy'
+{{ else -}}
+alias xc='xclip -selection clipboard'
+{{ end -}}
+alias python='python3'
+
+# Directory navigation
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias tree="eza -Tt --git-ignore"

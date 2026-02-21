@@ -1,0 +1,47 @@
+[[plugin.deps]]
+use = "uhs-robert/sshfs"
+rev = "5edff3b"
+hash = "e92138f6eb884bef96d92b2d114ac927"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:git"
+rev = "56971d0"
+hash = "36a484acf6a0a0219c543ccb4cee218f"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:smart-enter"
+rev = "56971d0"
+hash = "56fdabc96fc1f4d53c96eb884b02a5be"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:toggle-pane"
+rev = "56971d0"
+hash = "8a7c58225816a163a6e8730c0adafbc8"
+
+[[plugin.deps]]
+use = "lpnh/fg"
+rev = "aa88cd4"
+hash = "8b0e87c3176e0d44f79a8656f79f0fa"
+
+[[plugin.deps]]
+use = "lpnh/fr"
+rev = "aa88cd4"
+hash = "8b0e87c3176e0d44f79a8656f79f0fa"
+
+[[plugin.deps]]
+use = "stelcodes/bunny"
+rev = "6ee99bc"
+hash = "417de633d0008580b386bd3358eea56f"
+
+[[plugin.deps]]
+use = "Deepak22903/kdeconnect-send"
+rev = "7d9098d"
+hash = "498bda3e06d793f79fe1df7b28fc14a1"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:vcs-files"
+rev = "56971d0"
+hash = "5cfd9b2bd3f8ec4e3245e3426a967f82"
+
+[flavor]
+deps = []

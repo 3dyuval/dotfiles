@@ -1,0 +1,246 @@
+# Deno completions
+if [[ ":$FPATH:" != *":$HOME/.zsh/completions:"* ]]; then export FPATH="$HOME/.zsh/completions:$FPATH"; fi
+
+export PNPM_HOME="$HOME/.local/share/pnpm"
+export BUN_INSTALL="$HOME/.bun"
+
+# Optional: Android SDK
+[[ -d "$HOME/Android/Sdk" ]] && export ANDROID_HOME="$HOME/Android/Sdk" && export ANDROID_SDK_ROOT="$HOME/Android/Sdk" && PATH="$ANDROID_HOME/platform-tools:$PATH"
+
+# Optional: Go
+[[ -d "$HOME/go" ]] && export GOPATH="$HOME/go" && PATH="$GOPATH/bin:$PATH"
+
+export PATH
+
+# rbenv (Ruby version manager)
+if command -v rbenv &>/dev/null; then
+    eval "$(rbenv init - zsh)"
+fi
+
+typeset -A ZI
+ZI[BIN_DIR]="${HOME}/.zi/bin"
+
+# Set cache directory for completions
+export ZSH_CACHE_DIR="${HOME}/.zi/cache"
+mkdir -p "$ZSH_CACHE_DIR/completions"
+
+# Add vendor completions to fpath (system-wide completions from packages)
+fpath=(/usr/share/zsh/vendor-completions $fpath)
+
+# Add custom functions directory
+if [[ -d "$HOME/.config/zsh/functions" ]]; then
+    fpath=($HOME/.config/zsh/functions $fpath)
+    autoload -Uz $HOME/.config/zsh/functions/*(.:t)
+fi
+
+if [[ -f "${ZI[BIN_DIR]}/zi.zsh" ]]; then
+    source "${ZI[BIN_DIR]}/zi.zsh"
+
+    ZSH_CLAUDE_SHELL_TOP_COMMANDS=50
+    zi wait lucid for 3dyuval/zsh-claude-code-shell
+    # Load OMZ lib functions FIRST (required by OMZP::git aliases)
+    zi snippet OMZL::git.zsh
+
+    # Load all plugins with turbo mode (faster startup)
+    zi wait lucid for \
+        OMZP::git \
+        OMZP::docker-compose \
+        OMZP::docker \
+        OMZP::sudo \
+        OMZP::systemd \
+        OMZP::zsh-interactive-cd \
+        OMZP::aliases
+
+    # Load essential plugins with better autosuggestions config
+    zi wait lucid light-mode atload'
+        ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#808080,bg=none,bold,underline"
+        ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+        ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
+    ' for zsh-users/zsh-autosuggestions
+
+    zi wait lucid blockf atpull'zi creinstall -q .' for \
+        zsh-users/zsh-completions
+
+    zi wait lucid for zsh-users/zsh-history-substring-search
+
+    # Use system fzf bindings (compatible with installed version)
+    setopt nullglob
+    for fzf_path in \
+        /usr/share/doc/fzf/examples \
+        /usr/local/Cellar/fzf/*/shell \
+        /opt/homebrew/Cellar/fzf/*/shell \
+        ~/.fzf/shell \
+        /usr/local/share/fzf/shell \
+        /usr/share/fzf; do
+        if [[ -f "$fzf_path/key-bindings.zsh" ]]; then
+            source "$fzf_path/key-bindings.zsh"
+            source "$fzf_path/completion.zsh" 2>/dev/null
+            break
+        fi
+    done
+    unsetopt nullglob
+
+    zi wait lucid atinit'zicompinit; zicdreplay; command -v carapace &>/dev/null && source <(carapace _carapace)' for \
+        zdharma-continuum/fast-syntax-highlighting
+
+fi
+
+# Load missing OMZ lib functions for plugin compatibility
+zi snippet OMZL::functions.zsh    # For omz_urlencode, open_command
+
+# Fix encoding issue for omz_urlencode
+[[ -z "$langinfo[CODESET]" ]] && export LC_CTYPE="en_US.UTF-8"
+
+if [[ $CLD == 1 ]]; then
+  zi load 3dyuval/gh-alias.zsh
+else
+    zi ice wait lucid
+    zi load 3dyuval/gh-alias.zsh
+fi
+
+autoload -U add-zsh-hook
+lazy_load_nvm() {
+    export NVM_DIR="$HOME/.nvm"
+    if [[ -s "$NVM_DIR/nvm.sh" ]]; then
+        unset -f nvm node npm npx 2>/dev/null
+        source "$NVM_DIR/nvm.sh"
+        [[ -s "$NVM_DIR/bash_completion" ]] && source "$NVM_DIR/bash_completion"
+        local nvmrc_path="$(nvm_find_nvmrc)"
+        if [[ -n "$nvmrc_path" ]]; then
+          local nvmrc_path_version=$(cat "$nvmrc_path")
+          if [[ $(nvm current) != $nvmrc_path_version ]]; then
+            nvm use $nvmrc_path_version
+          fi
+        fi
+    fi
+}
+load_nvmrc() {
+  if [[ -e "$PWD/.nvmrc" ]]; then
+    nvmrc_node_version=$(cat "$PWD/.nvmrc")
+    current_node_version=$(nvm current | tr -cd '0-9.')
+    if [[ -e "$PWD/.nvmrc" && "$nvmrc_node_version" != "$current_node_version" ]]; then
+      nvm use
+    fi
+  fi
+}
+
+add-zsh-hook chpwd load_nvmrc
+
+nvm() { lazy_load_nvm && nvm "$@" }
+node() { lazy_load_nvm && node "$@" }
+npm() { lazy_load_nvm && npm "$@" }
+npx() { lazy_load_nvm && npx "$@" }
+
+# Initialize zoxide with only z command (avoid zi conflict)
+if command -v zoxide >/dev/null 2>&1; then
+    eval "$(zoxide init --no-cmd zsh)"
+    function z() { __zoxide_z "$@" }
+    function zq() { zoxide query "$@" }
+    function zf() { zoxide query -i "$@" }
+fi
+
+# Simple alias viewer
+als() { alias | grep -i "${1:-}" | sort }
+
+# Load pnpm completion (eager when CLD=1, lazy otherwise)
+if command -v pnpm &> /dev/null; then
+    if [[ $CLD == 1 ]]; then
+        eval "$(pnpm completion zsh)"
+    else
+        function _pnpm_completion_lazy() {
+            unfunction _pnpm_completion_lazy
+            unfunction pnpm
+            if ! (( ${+functions[compdef]} )); then
+                autoload -Uz compinit && compinit
+            fi
+            eval "$(pnpm completion zsh)"
+        }
+        pnpm() { _pnpm_completion_lazy && command pnpm "$@" }
+    fi
+fi
+
+if command -v mise &> /dev/null; then
+  eval "$(mise activate zsh)"
+fi
+
+if command -v starship &> /dev/null; then
+  eval "$(starship init zsh)"
+fi
+
+if command -v zoxide &> /dev/null; then
+  eval "$(zoxide init zsh)"
+fi
+
+if command -v fzf &> /dev/null; then
+  for fzf_path in /usr/share/fzf /usr/share/doc/fzf/examples; do
+    [[ -f "$fzf_path/completion.zsh" ]] && source "$fzf_path/completion.zsh"
+    [[ -f "$fzf_path/key-bindings.zsh" ]] && source "$fzf_path/key-bindings.zsh"
+  done
+fi
+
+[[ -s "$HOME/.bun/_bun" ]] && source "$HOME/.bun/_bun"
+
+# Optimized completion settings
+LISTMAX=150
+zstyle ':completion:*' menu select
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*'
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*:descriptions' format '%B%d%b'
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path ~/.zcompcache
+
+autoload -U colors && colors
+
+# History configuration
+HISTFILE=~/.zsh_history
+HISTSIZE=10000
+SAVEHIST=10000
+setopt APPEND_HISTORY
+setopt SHARE_HISTORY
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_REDUCE_BLANKS
+setopt HIST_SAVE_NO_DUPS
+setopt HIST_VERIFY
+
+setopt PROMPT_SUBST
+setopt AUTO_CD
+
+# Explicitly use emacs keybindings (prevent accidental vi mode with Escape)
+bindkey -e
+
+bindkey '^U' backward-kill-line
+bindkey '^K' kill-line
+bindkey '^[[Z' reverse-menu-complete
+
+# Home and End keys
+bindkey '^[[H' beginning-of-line               # Home
+bindkey '^[[F' end-of-line                     # End
+bindkey '^[[1~' beginning-of-line              # Home (alternate)
+bindkey '^[[4~' end-of-line                    # End (alternate)
+
+# Word navigation with ctrl+arrow keys (universal terminal support)
+bindkey '^[[1;5C' forward-word                  # Ctrl+Right
+bindkey '^[[1;5D' backward-word                 # Ctrl+Left
+WORDCHARS='*?[]~=&;!#$%^(){}<>'
+
+# Word deletion with ctrl+backspace/delete
+bindkey '^H' backward-kill-word                 # Ctrl+Backspace
+bindkey '^[[3;5~' kill-word                     # Ctrl+Delete
+bindkey '^[d' kill-word                         # Alt+D (forward delete word)
+
+# Deduplicate PATH pnpm entry
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+
+# Source all scripts
+for f in "$SCRIPTS_DIR"/*.sh(N); do source "$f"; done
+
+# Optional: deno
+[[ -f "$HOME/.deno/env" ]] && . "$HOME/.deno/env"
+
+# Optional: cargo
+[[ -f "$HOME/.cargo/env" ]] && . "$HOME/.cargo/env"

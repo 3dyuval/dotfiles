@@ -1,0 +1,111 @@
+[shell]
+unix_default = ["zsh", "-ic"]
+
+[mgr]
+show_hidden = true
+sort_by = "alphabetical"
+sort_sensitive = false
+sort_reverse = false
+sort_dir_first = true
+show_symlink = true
+scrolloff = 5
+linemode = "size"
+
+[preview]
+image_filter = "triangle"
+image_quality = 75
+tab_size = 2
+max_width = 1000
+max_height = 900
+cache_dir = ""
+ueberzug_scale = 1
+ueberzug_offset = [ 0, 0, 0, 0 ]
+
+[opener]
+edit = [
+  { run = 'nvim %s', desc = "Edit", block = true },
+]
+play = [
+  { run = 'mpv %s', desc = "Play", block = true },
+]
+edit-password = [
+  { run = '~/.config/yazi/scripts/gopass-edit.sh %s', desc = "Edit password", block = true },
+]
+open = [
+{{- if .isArch }}
+  { run = 'handlr open %s', desc = "Open", for = "linux" },
+{{- else }}
+  { run = 'xdg-open %s', desc = "Open", for = "linux" },
+{{- end }}
+]
+tab = [
+  { run = '~/.config/yazi/scripts/open-in-tab.sh %s', desc = "Open in a new pane" },
+]
+window = [
+  { run = '~/.config/yazi/scripts/open-in-window.sh %s', desc = "Open in new window" },
+]
+execute_tab = [
+  { run = '~/.config/yazi/scripts/execute-in-tab.sh %s', desc = "Execute in new tab" },
+]
+execute_window = [
+  { run = '~/.config/yazi/scripts/execute-in-window.sh %s', desc = "Execute in new window" },
+]
+
+[open]
+rules = [
+  { name = "*.gpg", use = ["edit-password"] },
+  { name = "*.sh", use = ["edit", "execute_tab", "execute_window", "tab", "window"] },
+  { name = "*.bash", use = ["edit", "execute_tab", "execute_window", "tab", "window"] },
+  { name = "*.zsh", use = ["edit", "execute_tab", "execute_window", "tab", "window"] },
+  { name = "*.fish", use = ["edit", "execute_tab", "execute_window", "tab", "window"] },
+  { mime = "*/x-shellscript", use = ["edit", "execute_tab", "execute_window", "tab", "window"] },
+  { mime = "text/*", use = ["edit", "tab", "window"] },
+  { name = "*.lua", use = ["edit", "tab", "window"] },
+  { url = "*/", use = ["edit", "open", "reveal", "tab", "window"] },
+  { mime = "video/*", use = ["play", "open"] },
+  { mime = "application/json", use = ["edit", "tab", "window"] },
+  { mime = "*/javascript", use = ["edit", "tab", "window"] },
+  { mime = "*/typescript", use = ["edit", "tab", "window"] },
+]
+
+[tasks]
+micro_workers = 5
+macro_workers = 10
+bizarre_retry = 3
+
+[input]
+cursor_blink = false
+
+[confirm]
+default_yes = false
+
+[log]
+enabled = true
+
+[[plugin.prepend_fetchers]]
+id   = "git"
+name = "*"
+run  = "git"
+
+[[plugin.prepend_fetchers]]
+id   = "git"
+name = "*/"
+run  = "git"
+
+[plugin]
+prepend_previewers = [
+  { name = "**/tldr/**/*.md", run = "tldr" },
+  { mime = "image/svg+xml", run = "svg" },
+  # Images
+  { mime = "image/*", run = "image" },
+  # Videos
+  { mime = "video/*", run = "video" },
+  # Archives
+  { mime = "application/zip", run = "archive" },
+  { mime = "application/gzip", run = "archive" },
+  { mime = "application/x-tar", run = "archive" },
+  { mime = "application/x-bzip2", run = "archive" },
+  { mime = "application/x-xz", run = "archive" },
+  { mime = "application/x-7z-compressed", run = "archive" },
+  { mime = "application/x-rar", run = "archive" },
+]

@@ -1,0 +1,10 @@
+{{- $name := promptStringOnce . "name" "Git user name" -}}
+{{- $email := promptStringOnce . "email" "Git email address" -}}
+{{- $isWayland := promptBoolOnce . "isWayland" "Is this a Wayland session" -}}
+{{- $isArch := or (eq .chezmoi.osRelease.id "arch") (eq .chezmoi.osRelease.id "cachyos") -}}
+
+[data]
+    name = {{ $name | quote }}
+    email = {{ $email | quote }}
+    isWayland = {{ $isWayland }}
+    isArch = {{ $isArch }}

@@ -1,0 +1,162 @@
+"$schema" = "https://yazi-rs.github.io/schemas/keymap.json"
+[mgr]
+prepend_keymap = [
+    # === CORE NAVIGATION (haei) ===
+    { on = "h", run = "leave", desc = "parent dir" },
+    { on = "a", run = "arrow next", desc = "move down" },
+    { on = "e", run = "arrow prev", desc = "move up" },
+    { on = "i", run = "enter", desc = "enter dir" },
+    { on = "<Enter>", run = "plugin smart-enter", desc = "smart enter" },
+    { on = "O", run = "open --interactive", desc = "open with" },
+    { on = "<C-x>", run = "shell -- ~/.config/yazi/scripts/execute-in-tab.sh %h", desc = "execute tab" },
+    { on = "<C-S-h>", run = "shell --orphan -- ~/.config/yazi/scripts/execute-in-tab.sh %h l", desc = "send left" },
+    { on = "<C-S-a>", run = "shell --orphan -- ~/.config/yazi/scripts/execute-in-tab.sh %h d", desc = "send down" },
+    { on = "<C-S-e>", run = "shell --orphan -- ~/.config/yazi/scripts/execute-in-tab.sh %h u", desc = "send up" },
+    { on = "<C-S-i>", run = "shell --orphan -- ~/.config/yazi/scripts/execute-in-tab.sh %h r", desc = "send right" },
+
+    # === FILE OPERATIONS ===
+    { on = "d", run = "remove", desc = "delete file" },
+    { on = "D", run = "remove --permanently", desc = "Delete permanent" },
+    { on = "r", run = "create", desc = "Create new" },
+    { on = "R", run = "rename", desc = "Rename file" },
+    { on = "c", run = "yank", desc = "Copy file" },
+    { on = "v", run = "paste", desc = "Paste file" },
+    { on = "<C-v>", run = "link", desc = "Create symlink" },
+    { on = "V", run = "paste --force", desc = "Force paste" },
+    { on = "s", run = "visual", desc = "Visual mode" },
+    { on = "<Tab>", run = "toggle", desc = "Toggle select" },
+    { on = "N", run = "toggle_all", desc = "Toggle all" },
+    { on = "u", run = "undo", desc = "Undo action" },
+
+    # === TEXT OBJECTS (r/t) ===
+    { on = ["r", "p"], run = "shell --block -- echo %h | wl-copy", desc = "Copy path" },
+    { on = ["r", "f"], run = "shell --block -- basename %h | wl-copy", desc = "Copy name" },
+    { on = ["t", "a"], run = "toggle_all --state=on", desc = "Select all" },
+    { on = ["t", "n"], run = "toggle_all --state=off", desc = "Deselect all" },
+
+    # === COPY SHORTCUTS ===
+    { on = ["p", "p"], run = "shell --block -- echo %h | wl-copy", desc = "Copy path" },
+    { on = ["p", "f"], run = "shell --block -- basename %h | wl-copy", desc = "Copy name" },
+    { on = ["p", "n"], run = "shell --block -- dirname %h | wl-copy", desc = "Copy dir" },
+
+    # === ENHANCED NAVIGATION ===
+    { on = "<A-a>", run = "arrow 5", desc = "down five" },
+    { on = "<A-e>", run = "arrow -5", desc = "up five" },
+    { on = "<C-Down>", run = "arrow -50%", desc = "page down" },
+    { on = "<C-Up>", run = "arrow 50%", desc = "page up" },
+    { on = ["a", "a"], run = "arrow bot", desc = "go bottom" },
+    { on = ["e", "e"], run = "arrow top", desc = "go top" },
+    { on = "E", run = "seek -10", desc = "seek up" },
+    { on = "A", run = "seek 10", desc = "seek down" },
+    { on = "<S-Down>", run = "seek 5", desc = "seek down" },
+    { on = "<S-Up>", run = "seek -5", desc = "seek up" },
+
+    # === QUICK ACCESS ===
+    { on = ["g", "h"], run = "cd ~", desc = "go home" },
+    { on = ["g", "d"], run = "cd ~/Downloads", desc = "go downloads" },
+    { on = ["g", "s"], run = "plugin vcs-files", desc = "git changes" },
+    { on = "z", run = "plugin zoxide jump", desc = "zoxide jump" },
+    { on = "Z", run = "plugin zoxide query", desc = "zoxide query" },
+
+    # === SEARCH & UTILITY ===
+    { on = ["f", "z"], run = "plugin fr rg", desc = "grep" },
+    { on = ["f", "d"], run = "search --via=fd --args='--type d'", desc = "dirs" },
+    { on = ["f", "f"], run = "search --via=fd", desc = "files" },
+    { on = ["f", "F"], run = "search --via=fd --args='--hidden'", desc = "all" },
+    { on = ["f", "h"], run = "search --via=fd --args='--hidden'", desc = "hidden" },
+    { on = "/", run = "find --smart", desc = "find smart" },
+    { on = "?", run = "help", desc = "show help" },
+
+    # === SSHFS ===
+    { on = ["S", "s"], run = "plugin sshfs -- menu", desc = "sshfs menu" },
+    { on = ["S", "m"], run = "plugin sshfs -- mount --jump", desc = "sshfs mount" },
+    { on = ["S", "u"], run = "plugin sshfs -- unmount", desc = "sshfs unmount" },
+    { on = ["S", "j"], run = "plugin sshfs -- jump", desc = "sshfs jump" },
+    { on = ["S", "h"], run = "cd ~/mnt", desc = "sshfs home" },
+
+    { on = ";", run = "plugin bunny", desc = "bookmarks menu" },
+    { on = "'", run = "plugin bunny fuzzy", desc = "fuzzy bookmarks" },
+    { on = ":", run = "shell --interactive", desc = "open shell" },
+    { on = ".", run = "hidden toggle", desc = "toggle hidden" },
+    { on = "n", run = "search next", desc = "next match" },
+    { on = "N", run = "search prev", desc = "prev match" },
+    { on = "m", run = "find_next", desc = "next find" },
+    { on = "M", run = "find_prev", desc = "prev find" },
+    { on = "Q", run = ["plugin sshfs -- unmount_all", "quit"], desc = "unmount quit" },
+    { on = "q", run = "quit", desc = "quit yazi" },
+
+    # === KDE CONNECT ===
+    { on = "<C-s>", run = "plugin kdeconnect-send", desc = "kde send" },
+
+    # === OPEN WITH ===
+    { on = "<C-o>", run = "shell --interactive --block -- read -p 'Open with: ' cmd && $cmd %h &", desc = "open with" },
+
+    # === LAYOUT ADJUSTMENT ===
+    { on = "<Space>", run = "plugin toggle-pane max-preview", desc = "toggle preview" },
+
+    # === DISABLE DEFAULTS ===
+    { on = "j", run = "noop" },
+    { on = "k", run = "noop" },
+    { on = "l", run = "noop" },
+    { on = "d", run = "noop" },
+    { on = "y", run = "noop" },
+    { on = "p", run = "noop" },
+]
+
+[tasks]
+prepend_keymap = [
+    { on = "a", run = "arrow next", desc = "next task" },
+    { on = "e", run = "arrow prev", desc = "prev task" },
+    { on = "i", run = "inspect", desc = "inspect task" },
+    { on = "x", run = "cancel", desc = "cancel task" },
+    { on = "Q", run = "close", desc = "close tasks" },
+]
+
+[input]
+prepend_keymap = [
+    { on = "<C-h>", run = "move -1", desc = "move left" },
+    { on = "<C-i>", run = "move 1", desc = "move right" },
+    { on = "<C-a>", run = "move -999", desc = "go start" },
+    { on = "<C-e>", run = "move 999", desc = "go end" },
+    { on = "<C-w>", run = "kill word", desc = "delete word" },
+    { on = "<C-x>", run = "kill line", desc = "delete line" },
+    { on = "<C-z>", run = "undo", desc = "undo input" },
+]
+
+[select]
+keymap = [
+    { on = "a", run = "arrow next", desc = "next item" },
+    { on = "e", run = "arrow prev", desc = "prev item" },
+    { on = "i", run = "close --submit", desc = "select item" },
+    { on = "h", run = "close", desc = "cancel select" },
+    { on = "<Enter>", run = "close --submit", desc = "select item" },
+    { on = "<Esc>", run = "close", desc = "cancel select" },
+    { on = "q", run = "close", desc = "cancel select" },
+    { on = "<Up>", run = "arrow prev", desc = "prev item" },
+    { on = "<Down>", run = "arrow next", desc = "next item" },
+    { on = "j", run = "noop", desc = "key disabled" },
+    { on = "k", run = "noop", desc = "key disabled" },
+]
+
+[help]
+keymap = [
+    { on = "<Esc>", run = "close", desc = "close help" },
+    { on = "<C-c>", run = "close", desc = "close help" },
+    { on = "?", run = "filter", desc = "filter help" },
+    { on = "e", run = "arrow prev", desc = "prev line" },
+    { on = "a", run = "arrow next", desc = "next line" },
+    { on = "q", run = "close", desc = "close help" },
+    { on = "Q", run = "close", desc = "close help" },
+]
+
+[confirm]
+keymap = [
+    { on = "<Esc>", run = "close", desc = "cancel confirm" },
+    { on = "<Enter>", run = "close --submit", desc = "submit confirm" },
+    { on = "n", run = "close", desc = "cancel confirm" },
+    { on = "y", run = "close --submit", desc = "submit confirm" },
+    { on = "e", run = "arrow prev", desc = "prev line" },
+    { on = "a", run = "arrow next", desc = "next line" },
+    { on = "c", run = "close --submit", desc = "confirm action" },
+    { on = "x", run = "close", desc = "cancel action" },
+]

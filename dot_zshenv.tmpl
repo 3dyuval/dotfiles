@@ -1,0 +1,20 @@
+export EDITOR="nvim"
+export VISUAL="nvim"
+export SCRIPTS_DIR="$HOME/.config/scripts"
+export LANG=en_US.UTF-8
+export RIPGREP_CONFIG_PATH="$HOME/.ripgreprc"
+
+# PATH setup
+PATH="$HOME/.local/bin:$PATH"
+PATH="$HOME/go/bin:$PATH"
+PATH="$HOME/.local/share/pnpm:$PATH"
+PATH="$HOME/.bun/bin:$PATH"
+
+# Add Node 20 LTS to PATH for non-interactive
+[[ -d "$HOME/.nvm/versions/node" ]] && PATH="$(ls -d "$HOME"/.nvm/versions/node/v20.*/bin 2>/dev/null | tail -1):$PATH"
+
+if [ -d "/opt/nvim/bin" ] && [ -x "/opt/nvim/bin/nvim" ]; then
+    PATH="/opt/nvim/bin:$PATH"
+fi
+
+export PATH
